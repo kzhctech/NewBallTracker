@@ -1,7 +1,11 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+if (!process.env.PORT){
 const puppeteer = require('puppeteer-core');
+}else {
+	const puppeteer = require('puppeteer');
+}
 const http = require('http').createServer(app);
 const cors = require('cors');
 
