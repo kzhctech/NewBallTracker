@@ -1,13 +1,15 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-if (!process.env.PORT){
-const puppeteer = require('puppeteer-core');
-}else {
-	const puppeteer = require('puppeteer');
-}
+var puppeteer = require('puppeteer-core');
 const http = require('http').createServer(app);
 const cors = require('cors');
+
+
+if (process.env.PORT){
+	puppeteer = require('puppeteer');
+}
+
 
 const io = require('socket.io')(http, {
   cors: { origin: "*" }
