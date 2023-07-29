@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Updated Values</title>
+  <style>
+ .lefthand {
+  transform: rotateY(180deg);
+}
+    
+    
+     .ballmarker{
+      width: 5px;
+      background-color: #56ddff;
+      z-index: 99999999999999;
+      position: absolute;
+    }
+    
+      .ballmarker img{
+           width: 100%;
+           height: auto;
+           transform: scale(2.5) translateY(-5px);
+         }
+    
+    
+     #bm1{
+      height: 90px;
+      bottom: 80px;
+      left: 110px;
+      transform: rotateZ( 13deg );
+      animation-name: length;
+      animation-duration: 3s;
+      animation-fill-mode: forwards;
+    }
+    
+    
+    #bm2{
+      height: 80px;
+      bottom: 145px;
+      left: 122px;
+      transform: rotateZ(13deg);
+      opacity: 0;
+      background-color: #007795;
+      animation-name: direction;
+      animation-delay: 3s;
+      animation-duration: 2s;
+      animation-fill-mode: forwards;
+    }
+   
+    
+   @keyframes length {
+  0% {
+    height: 1px;
+    
+  }
+100% {
+  height: 70px;
+  
+}
+}
+
+   
+  @keyframes direction {
+  0% {
+    height: 1px;
+    opacity: 1;
+  }
+100% {
+  height: 60px;
+  opacity: 1;
+}
+}
+
+
+  @keyframes lengthLength {
+  0% {
+    height: 1px;
+    
+  }
+100% {
+  height: 80px;
+  
+}
+}
+
+
+  @keyframes dirLength {
+  0% {
+    height: 1px;
+    opacity: 1;
+  }
+100% {
+  height: 40px;
+  opacity: 1;
+}
+}
+
+
+  @keyframes lengthYourker {
+  0% {
+    height: 1px;
+    
+  }
+100% {
+  height: 100px;
+  
+}
+}
+
+
+  @keyframes dirYourker {
+  0% {
+    height: 1px;
+    opacity: 1;
+  }
+100% {
+  height: 25px;
+  opacity: 1;
+}
+}
+
+
+  @keyframes lengthSlot {
+  0% {
+    height: 1px;
+  }
+100% {
+  height: 90px;
+  
+}
+}
+
+
+  @keyframes dirSlot {
+  0% {
+    height: 1px;
+    opacity: 1;
+    
+  }
+100% {
+  height: 30px;
+  opacity: 1;
+  
+}
+}
+
+ 
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    .batsman{
+      position: absolute;
+      z-index: 9999999;
+      height: 80px;
+      width: auto;
+      bottom: 177px;
+      animation-name: ;
+      animation-delay: 4.5s;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+    }
+    
+    
+      .cov1{
+      position: absolute;
+      z-index: 9999999;
+      left: 100px;
+      height: 86px;
+      width: auto;
+      bottom: 177px;
+      opacity: 0;
+      animation-name: cov1;
+      animation-delay: 4.8s;
+      animation-duration: 0.8s;
+    }
+    
+    
+     .cov2{
+      position: absolute;
+      z-index: 9999999;
+      height: 90px;
+      left: 100px;
+      width: auto;
+      bottom: 177px;
+      opacity: 0;
+      animation-name: cov2;
+      animation-delay: 5.5s;
+      animation-duration: 0.6s;
+      animation-fill-mode: forwards;
+    }
+    
+     
+    .kiper{
+      position: absolute;
+      z-index: 0;
+      height: 55px;
+      left: 110px;
+      width: auto;
+      bottom: 197px;
+    }
+    
+    
+
+    
+    
+    .lengName{
+      background-color: #fff;
+      text-align: center;
+      font-size: 11px;
+      visibility: hidden;
+      animation: bgc 1s infinite;
+    }
+    
+    .show{
+      visibility: visible;
+    }
+      .field{
+        height: 300px;
+        width: 300px;
+        background-color: green;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 350px;
+        position: relative;
+      }
+      .pitch{
+        height: 130px;
+        width: 50px;
+        background-color: #a58e00;
+        transform: rotateX( 60deg ) scale(1.8);
+      }
+      .stump{
+        height: 30px;
+        width: 3px;
+        z-index: 9999;
+        background: url('sbg.jpg');
+        position: absolute;
+      }
+      
+      .center{
+        right: 150px;
+      }
+      .left{
+        right: 156px;
+      }
+      .right{
+        right: 144px;
+      }
+    .top{
+       margin-top: -120px;
+    }
+    
+    .bottom{
+      margin-top: 134px;
+    }
+    
+    .crline{
+      width: 70px;
+      height: 2px;
+      margin-left: -10px;
+      background-color: #fff;
+    }
+    
+    .bat{
+      margin-top: 25px;
+    }
+    
+    .bowl{
+      margin-top: 30px;
+    }
+    
+
+
+   
+  @keyframes batsman {
+  0% {
+    opacity: 1;
+  }
+100% {
+  opacity: 0;
+}
+}
+
+
+  @keyframes cov1 {
+  0% {
+    opacity: 0;
+  }
+100% {
+  opacity: 1;
+}
+}
+
+
+  @keyframes cov2 {
+  0% {
+    opacity: 0;
+  }
+100% {
+  opacity: 1;
+}
+}
+
+    
+    @keyframes example {
+  0% {transform:scale(1);}
+  50% {transform:scale(2);}
+100% {transform:scale(1);}
+}
+  @keyframes bgc {
+  0% {background-color: #ffffff;}
+  50% {background-color: #ffffff00;}
+100% {background-color: #ffffff;}
+}
+
+    .cb{
+      width: 15px;
+      height: 15px;
+      z-index: 99999999;
+      position: absolute;
+      top: 85.0px;
+      visibility: hidden;
+      left: 120px;
+      animation: example 1s infinite;
+    }
+  </style>
+</head>
+
+<body>
+ <div id="myDiv" class="field">
+   <img src="cb.png" class="cb" alt="">
+ <div class="stump top left"></div>
+ <div class="stump top center"></div>
+<div class="stump top right"></div>
+<img class="kiper" src="kiper.png" alt="">
+
+<img class="batsman" src="batsman.png" alt="">
+
+   <div class="ballmarker" id="bm2">
+     <img src="cb.png" alt="">
+   </div>
+  
+  <div class="ballmarker" id="bm1">
+    <img src="cb.png" alt="">
+    </div>
+   
+ <div class="stump bottom left"></div>
+ <div class="stump bottom center"></div>
+ <div class="stump bottom right"></div>
+        <div class="pitch">
+          <div class="crline bat"></div>
+         <div id="lenawrap">
+            <div id="Yourker" class="lengName">
+            Yourker
+          </div>
+           <div id="Slot" class="lengName ">
+            Slot
+          </div>
+            <div id="Length" class="lengName">
+            Length
+          </div>
+            <div id="Short" class="lengName show">
+            Short
+          </div>
+         </div>
+          <div class="crline bowl"></div>
+        </div>
+      </div>
+
+  
+  <h1>Updated Values:</h1>
+  Commentry:<span id="Comment"></span>
+  <ul id="updatedValuesList">                              
+  </ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let textTold = '';
+
+    socket.on('updatedValues', (updatedValues) => {
+
+	    console.log(updatedValues);
+	    textTold = updatedValues.Comment;
+     const updatedValuesList = document.getElementById('updatedValuesList');
+     updatedValuesList.innerHTML = '';
+
+      for (const [key, value] of Object.entries(updatedValues)) {
+
+
+
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `<strong>${key}:</strong> ${value}`;
+        updatedValuesList.appendChild(listItem);
+
+let selector = '#' + key;
+console.log('Selector:', selector);
+
+
+	      let element = document.querySelector(selector);
+console.log('Element:', element);
+
+
+
+if (element) {
+  element.innerHTML = value;
+} else {
+  console.log('Element not found.');
+}
+
+
+
+}
+
+
+    });
+
+
+
+
+
+
+
+
+
+var lengthShort = document.querySelector('#Short');
+
+var lengthYourker = document.querySelector('#Yourker');
+
+var lengthLength = document.querySelector('#Length');
+
+var lengthSlot = document.querySelector('#Slot');
+
+var lengthLine = document.querySelector('#bm1');
+
+var dirLine = document.querySelector('#bm2');
+
+var field = document.querySelector('#myDiv');
+
+var lengWrap = document.querySelector('#lenawrap');
+
+var rightHand = true;
+
+function toggleHand(){
+  
+  if (rightHand){
+  field.classList.add("lefthand");
+  lengWrap.classList.add("lefthand");
+  rightHand = false;
+  }else{
+    field.classList.remove("lefthand");
+  lengWrap.classList.remove("lefthand");
+  rightHand = true;
+  }
+  
+}
+
+function animi(){
+  lengthLine.style.display = "none";
+  dirLine.style.display = "none";
+  
+  setTimeout(function() {
+  lengthLine.style.display = "block";
+  dirLine.style.display = "block";
+  }, 10);
+}
+
+
+function removeLength(){
+  lengthShort.classList.remove("show");
+  lengthSlot.classList.remove("show");
+  lengthYourker.classList.remove("show");
+  lengthLength.classList.remove("show");
+}
+
+
+function pitch(pitching){
+    if(!pitching){
+  dirLine.style.left = "117px";
+  lengthLine.style.left = "105px";
+  lengthLine.style.transform = "rotateZ(12deg)";
+  dirLine.style.transform = "rotateZ(12deg)";
+  }
+  else if(pitching == 'inline'){
+  dirLine.style.left = "140px";
+  lengthLine.style.left = "128px";
+  lengthLine.style.transform = "rotateZ(12deg)";
+  dirLine.style.transform = "rotateZ(12deg)";
+  }
+  else if(pitching == 'leg'){
+  dirLine.style.left = "155px";
+  lengthLine.style.left = "132px";
+  lengthLine.style.transform = "rotateZ(22deg)";
+  dirLine.style.transform = "rotateZ(22deg)";
+  }
+  
+}
+
+
+function Slot(pitching){
+  
+  animi();
+  
+  lengthLine.style.animationName = "lengthSlot";
+  dirLine.style.animationName = "dirSlot";
+  
+  dirLine.style.bottom = "165px";
+  
+  pitch(pitching);
+  
+  removeLength();
+  lengthSlot.classList.add("show");
+}
+
+
+
+
+function Short(pitching){
+  
+  animi();
+  
+  
+  lengthLine.style.animationName = "length";
+  dirLine.style.animationName = "direction";
+  
+  dirLine.style.bottom = "145px";
+  
+  pitch(pitching);
+  
+  removeLength();
+  lengthShort.classList.add("show");
+}
+
+
+
+
+
+function Length(pitching){
+  
+  animi();
+  
+  
+  lengthLine.style.animationName = "lengthLength";
+  dirLine.style.animationName = "dirLength";
+  
+  dirLine.style.bottom = "155px";
+  
+  pitch(pitching);
+  
+  removeLength();
+  lengthLength.classList.add("show");
+}
+
+function Yourker(pitching){
+  
+  animi();
+  
+  
+  lengthLine.style.animationName = "lengthYourker";
+  dirLine.style.animationName = "dirYourker";
+  dirLine.style.bottom = "175px";
+  
+  pitch(pitching);
+  
+  removeLength();
+  lengthYourker.classList.add("show");
+}
+
+
+var pitched;
+
+    setInterval( () => {
+  console.log('working');
+  if(textTold.includes('inline') ||textTold.includes('stumps') || textTold.includes('middle') ||  textTold.includes('in line')){
+    console.log('inline it is');
+    pitched = "inline";
+  }
+  
+  if(textTold.includes('leg') || textTold.includes('outside leg')){
+    console.log('inline it is');
+    pitched = "leg";
+  }
+  
+  if(textTold.includes('around off') || textTold.includes('outside of')){
+    console.log('inline it is');
+    pitched = "";
+  }
+  
+  
+  if(textTold.includes('your car')){
+    console.log('ok');
+    Yourker(pitched);
+  }
+  
+  if(textTold.includes('plot') || textTold.includes('slot')){
+    console.log('ok');
+    Slot(pitched);
+  }
+  
+  if(textTold.includes('length')){
+    console.log('ok');
+    Length(pitched);
+  }
+  
+  if(textTold.includes('short')){
+    console.log('ok');
+    Short(pitched);
+  }
+
+
+    },5000);
+
+
+
+
+
+
+
+  </script>
+</body>
+</html>
+
