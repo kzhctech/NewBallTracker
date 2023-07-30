@@ -143,6 +143,31 @@ const observeElements = async (page, selectors) => {
  return initialValues;
 };
 
+
+
+
+
+
+
+async function waitForSelectorWithRetry(page, selector, interval) {
+  while (true) {
+    try {
+      await page.waitForSelector(selector);
+      const element = await page.$(selector);
+      if (element) {
+        return element;
+      }
+    } catch (error) {
+      console.log(`Selector '${selector}' not found. Retrying in 1 minute...`);
+      await page.waitForTimeout(interval);
+    }
+  }
+}
+
+
+
+
+
 const main = async (url) => {
  try {
   const browser = await puppeteer.launch({
@@ -167,6 +192,14 @@ const main = async (url) => {
 
   await page.goto(startUrl);
   console.log('Going');
+
+
+
+
+
+
+
+
 
   const selectors = {
    Last: 'div.result-box > span',
@@ -193,6 +226,25 @@ const main = async (url) => {
    //BLEco: 'app-match-live-player > div > div:nth-child(4) div.strike-rate:nth-child(3) span:nth-child(2)'
   };
   
+
+
+
+
+	 for (const key in selectors) {
+    if (Object.prototype.hasOwnProperty.call(selectors, key)) {
+      const selector = selectors[key];
+      const elementExists = await page.$(selector);
+      if (!elementExists) {
+        console.log(`Element with selector '${selector}' (key: '${key}') does not exist on the page.`);
+        delete selectors[key];
+      }
+    }
+  }
+
+
+
+
+
   
   const initialValues = await observeElements(page, selectors);
     Object.assign(updatedValues, initialValues);
@@ -203,8 +255,23 @@ const main = async (url) => {
     let previousValue = '';
 	 let pinfo = true;
 
+
+
+
+
+
+
+
     setInterval(async () => {
 
+
+
+const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
+
+updatedValues.Team1Logo = imageSrc;
+
+
+if (selectors.Status){
 
 if (pinfo){                                                           await page.click('.ptnr-info');
 	pinfo = false;
@@ -220,7 +287,7 @@ const partnerShipDataElement = await page.$('.partner-ship-data');
 
 
 
-const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
+//const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
 
 const B1imageSrc = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(1) div.playerProfileDefault > div:nth-child(1) > img', (img) => img.src);
 
@@ -237,7 +304,7 @@ const BLimgJ = await page.$eval('app-match-live-player > div > div:nth-child(4) 
    // console.log('Image source:', B1imageSrc,B2imageSrc,BimgJ,BLimageSrc,BLimgJ);
 
 
-updatedValues.Team1Logo = imageSrc;
+//updatedValues.Team1Logo = imageSrc;
 
 updatedValues.B1img = B1imageSrc;
 updatedValues.B2img = B2imageSrc;
@@ -311,7 +378,16 @@ updatedValues.LBs = result.LBs;                            updatedValues.RR = re
       } else {
         console.log('No non-empty value found in child divs');
       }
+
+
+}
     }, 1000);
+
+
+
+
+
+
 
   //  await browser.close();
   } catch (err) {
@@ -319,7 +395,7 @@ updatedValues.LBs = result.LBs;                            updatedValues.RR = re
   }
 };
           
-main("https://crex.live/scoreboard/GK5/178/5th-TEST/Q/S/aus-vs-eng-5th-test-the-ashes-2023/live");
+main("https://crex.live/scoreboard/KJ0/1FV/2nd-ODI/O/V/ind-vs-wi-2nd-odi-india-tour-of-west-indies-2023/live");
 
 io.on('connection', (socket) => {
   setInterval(()=>socket.emit('updatedValues', updatedValues),1000);

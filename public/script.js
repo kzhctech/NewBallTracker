@@ -380,6 +380,10 @@ if (element) {
 
 
 function formatBadString(input) {
+
+
+
+	if (input){
   // Remove the part before 'numberLast', where 'number' can be any digit
   const cleanedInput = input.replace(/.*?\d+Last/, '');
 
@@ -408,6 +412,9 @@ return [`<li class="page-item" id="${id}"><a class="page-link" href="#">${number
 
   // Flatten the array and join the wrapped elements into a single string with line breaks
   return wrappedElements.flat().join('\n');
+
+
+	}
 }
 
 // Test with the given string

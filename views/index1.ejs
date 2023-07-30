@@ -268,15 +268,14 @@
 
 
 
- updatedValues.LBs  = formatBadString(updatedValues.LBs);
 
+if (updatedValues.LBs){
+ updatedValues.LBs  = formatBadString(updatedValues.LBs);
+}
   // console.log(updatedValues);
 	  
 
 
-
-
-let bcid  =  'this-' + updatedValues.ComOver.split('.')[1];
 
 	  
 var logo = document.getElementById('logo');
@@ -285,15 +284,25 @@ var b1img = document.getElementById('bat1img');
 var b2img = document.getElementById('bat2img');
 var blimg = document.getElementById('blimg');
 
+
+
+
+
 logo.setAttribute("src",updatedValues.Team1Logo);
 
-b1img.setAttribute("src",updatedValues.B1img);
-b2img.setAttribute("src",updatedValues.B2img);
-blimg.setAttribute("src",updatedValues.BLimg);
+
 
 
 
    textTold = updatedValues.Comment;
+
+
+
+
+
+
+
+
    const updatedValuesList = document.getElementById('updatedValuesList');
    updatedValuesList.innerHTML = '';
 
@@ -321,24 +330,45 @@ blimg.setAttribute("src",updatedValues.BLimg);
 
 
 
-const ele = document.getElementById(bcid);
-
-	   if (!ele) {
-
-
-bcid  =  'last-' + updatedValues.ComOver.split('.')[1];
-
-	   }
-
-
-setPosition(updatedValues.Comment,updatedValues.Event,bcid);
-
-
-
    }
 
 
+
+	  if (updatedValues.ComOver){
+
+
+
+b1img.setAttribute("src",updatedValues.B1img);
+b2img.setAttribute("src",updatedValues.B2img);
+blimg.setAttribute("src",updatedValues.BLimg);
+
+
+
+ let bcid  =  'this-' + updatedValues.ComOver.split('.')[1];
+                                                          
+const ele = document.getElementById(bcid);           
+
+	if (!ele) {                                                                                                                                                                            bcid  =  'last-' + updatedValues.ComOver.split('.')[1];                                                                                                }
+                                                                                               setPosition(updatedValues.Comment,updatedValues.Event,bcid);
+
+	  }
+
+
+
+
+
+
+
+
+
   });
+
+
+
+
+
+
+
 
  </script>
 </body>
