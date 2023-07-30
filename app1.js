@@ -48,6 +48,18 @@ app.get('/', (req, res) => {
 
 
 
+function createMainFunction() {
+  const updatedValues = {}; // Each instance gets its own separate updatedValues
+
+
+
+
+
+
+
+
+
+
 
 const getInitialValues = async (page, selectors) => {
  const initialValues = {};
@@ -150,24 +162,7 @@ const observeElements = async (page, selectors) => {
 
 
 
-async function waitForSelectorWithRetry(page, selector, interval) {
-  while (true) {
-    try {
-      await page.waitForSelector(selector);
-      const element = await page.$(selector);
-      if (element) {
-        return element;
-      }
-    } catch (error) {
-      console.log(`Selector '${selector}' not found. Retrying in 1 minute...`);
-      await page.waitForTimeout(interval);
-    }
-  }
-}
 
-
-function createMainFunction() {
-  const updatedValues = {}; // Each instance gets its own separate updatedValues
 
 
 
@@ -250,10 +245,10 @@ async function main(url) {
 
   
   const initialValues = await observeElements(page, selectors);
-    Object.assign(updatedValues[url], initialValues);
+    Object.assign(updatedValues, initialValues);
 
     console.log('Initial values:', initialValues);
-    console.log('Updated values:', updatedValues[url]);
+    console.log('Updated values:', updatedValues);
 
     let previousValue = '';
 	 let pinfo = true;
@@ -271,7 +266,7 @@ async function main(url) {
 
 const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
 
-updatedValues[url].Team1Logo = imageSrc;
+updatedValues.Team1Logo = imageSrc;
 
 
 if (selectors.Status){
@@ -309,12 +304,12 @@ const BLimgJ = await page.$eval('app-match-live-player > div > div:nth-child(4) 
 
 //updatedValues[url].Team1Logo = imageSrc;
 
-updatedValues[url].B1img = B1imageSrc;
-updatedValues[url].B2img = B2imageSrc;
-updatedValues[url].BJ = BimgJ;
+updatedValues.B1img = B1imageSrc;
+updatedValues.B2img = B2imageSrc;
+updatedValues.BJ = BimgJ;
 
-updatedValues[url].BLimg = BLimageSrc;
-updatedValues[url].BLJ = BLimgJ;
+updatedValues.BLimg = BLimageSrc;
+updatedValues.BLJ = BLimgJ;
 
 
       let result = await page.evaluate(() => {                                                                                                       let topDiv = document.querySelector('app-match-commentary div#topDiv');
@@ -358,7 +353,9 @@ let rrElement = document.querySelector('div.live-score-card div.team-run-rate');
 
 
 
-updatedValues[url].LBs = result.LBs;                            updatedValues[url].RR = result.RR;                              updatedValues[url].pship = pshipVal;
+updatedValues.LBs = result.LBs;       
+updatedValues.RR = result.RR;        
+updatedValues.pship = pshipVal;
 
 
       if (result !== null) {
@@ -372,9 +369,9 @@ updatedValues[url].LBs = result.LBs;                            updatedValues[ur
 
 
                 // Update the updatedValues[url] variable with the new values
-        updatedValues[url].Comment = result.comment;
-        updatedValues[url].ComOver = result.over;
-        updatedValues[url].ComEvent = result.Event;
+        updatedValues.Comment = result.comment;
+        updatedValues.ComOver = result.over;
+        updatedValues.ComEvent = result.Event;
         //  console.log('Updated values:', updatedValues[url]);
 
         }
@@ -429,11 +426,12 @@ io.on('connection', (socket) => {
 
     if (updatedValues[url]) {
       // If it exists, emit the updatedValues back to the user
-      socket.emit('updated-values', updatedValues[url]);
+   
+setInterval(()=>socket.emit('updatedValues', updatedValues),1000);
     } else {
       main(url);
-      // After the main function is called, emit the updatedValues back to the user
-      socket.emit('updated-values', updatedValues[url]);
+      // After the main function is called, emit the updatedValues back to the use
+	    setInterval(()=>socket.emit('updatedValues', updatedValues),1000);
     }
 
     // Track connected users for each URL

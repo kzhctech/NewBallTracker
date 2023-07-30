@@ -258,7 +258,12 @@
 
 
 
-
+let url = prompt("Please enter CREX URL", "");
+  if (url != null) {
+    socket.emit('url',url);
+  }else{
+   socket.emit('url','https://crex.live/scoreboard/GK5/178/5th-TEST/Q/S/aus-vs-eng-5th-test-the-ashes-2023/live');
+  }
 
 
 
