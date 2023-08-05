@@ -52,7 +52,7 @@ function createMainFunction() {
   const updatedValues = {}; // Each instance gets its own separate updatedValues
 
 
-
+/*
 
 
 const navigateWithRetries = async (page, url, timeout, maxDuration) => {
@@ -73,7 +73,7 @@ const navigateWithRetries = async (page, url, timeout, maxDuration) => {
   }
 };
 
-
+*/
 
 
 
