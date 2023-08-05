@@ -197,15 +197,15 @@ async function main(url) {
   });
 
   await page.exposeFunction('observeElmData', (data) => {
-   updatedValues[url][data.label] = data.newValue;
+   updatedValues[data.label] = data.newValue;
    //   console.log(data);
    console.log('Updated values:',
-    updatedValues[url]);
+    updatedValues);
   });
 
   const startUrl = url;
 
- await navigateWithRetries(page, startUrl, 5000, Infinity);
+ await navigateWithRetries(page, startUrl, 9000, Infinity);
 
 
   await page.goto(startUrl);
