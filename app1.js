@@ -55,6 +55,23 @@ function createMainFunction() {
 
 
 
+const navigateWithRetries = async (page, url, timeout, maxDuration) => {
+  const startTime = Date.now();
+
+  while (true) {
+    try {
+      await page.goto(url, { timeout });
+      return;
+    } catch (error) {
+      console.error(`Retry failed: ${error.message}`);
+    }
+
+    const elapsedTime = Date.now() - startTime;
+    if (maxDuration && elapsedTime >= maxDuration) {
+      throw new Error(`Navigation timed out after ${maxDuration} milliseconds.`);
+    }
+  }
+};
 
 
 
@@ -187,6 +204,9 @@ async function main(url) {
   });
 
   const startUrl = url;
+
+ await navigateWithRetries(page, startUrl, 5000, Infinity);
+
 
   await page.goto(startUrl);
   console.log('Going');
