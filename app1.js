@@ -205,7 +205,7 @@ async function main(url) {
 
   const startUrl = url;
 
- await navigateWithRetries(page, startUrl, 9000, Infinity);
+ //await navigateWithRetries(page, startUrl, 10000, Infinity);
 
 
   await page.goto(startUrl);
