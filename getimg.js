@@ -8,6 +8,9 @@ const searchGoogle = async (searchQuery) => {
   const page = await browser.newPage();
 
   try {
+
+	console.time('Execution Time');
+  
     await page.goto('https://www.google.com');
 
     await page.waitForSelector('input.gNO89b');
@@ -57,6 +60,9 @@ const imageUrl = await page.evaluate(() => {
     });
 
     console.log('First Image URL:', imageUrl);
+
+
+console.timeEnd('Execution Time');
 
 
 

@@ -45,10 +45,10 @@ app.get('/', (req, res) => {
 
 
 
+var close = false;
 
 
-
-function createMainFunction() {
+function createMainFunction( mainInstances) {
   const updatedValues = {}; // Each instance gets its own separate updatedValues
 
 
@@ -184,6 +184,91 @@ const observeElements = async (page, selectors) => {
 
 
 async function main(url) {
+
+
+const searchGoogle = async (searchQuery,browser) => {                                      
+
+
+
+const NewPage = await browser.newPage();
+
+  try {
+
+        console.time('Execution Time');
+
+    await NewPage.goto('https://www.google.com');
+
+    await NewPage.waitForSelector('input.gNO89b');
+        const inputElement = await NewPage.$('input.gNO89b'); // Find the input element
+    const inputOuterHTML = await NewPage.evaluate(element => element.outerHTML, inputElement);
+
+    console.log('Input OuterHTML:', inputOuterHTML);
+
+    await NewPage.type('input', searchQuery + 'profile espncricinfo');
+    await NewPage.keyboard.press('Enter');
+
+    await NewPage.waitForNavigation();
+
+    const firstResult = await NewPage.evaluate(() => {
+      const firstElement = document.querySelector('div.g');
+
+      const titleElement = firstElement.querySelector('h3');
+      const linkElement = firstElement.querySelector('a');
+
+      const title = titleElement ? titleElement.textContent.trim() : '';
+      const link = linkElement ? linkElement.href : '';
+
+      return {
+        title,
+        link,
+      };
+    });
+
+    console.log('First Search Result:', firstResult);
+
+    // Navigate to the first URL
+    await NewPage.goto(firstResult.link);
+
+    // Wait for the NewPage to load
+    await NewPage.waitForSelector('img');
+    // Get the text content of the NewPage
+    const NewPageContent = await NewPage.evaluate(() => {
+      return document.body.textContent;
+    });
+
+   // console.log('NewPage Content:', NewPageContent);
+
+
+const imageUrl = await NewPage.evaluate(() => {
+      const imageElement = document.querySelector('img');
+      return imageElement ? imageElement.src : null;
+    });
+
+    console.log('First Image URL:', imageUrl);
+	  return  imageUrl;
+
+
+console.timeEnd('Execution Time');
+
+
+
+  } catch (error) {
+    console.error('An error occurred:', error);
+  } finally {
+    await NewPage.close();
+  }
+
+
+
+
+};
+
+
+
+
+
+
+
  try {
   const browser = await puppeteer.launch({
    headless: true,
@@ -277,19 +362,18 @@ async function main(url) {
 
 
 
-
-
-
     setInterval(async () => {
 
-
+if (close) {
+	return;
+}
 
 const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
 
 updatedValues.Team1Logo = imageSrc;
 
 
-if (selectors.Status){
+if (selectors.B1name){
 
 if (pinfo){                                                           await page.click('.ptnr-info');
 	pinfo = false;
@@ -318,6 +402,33 @@ const BLimageSrc = await page.$eval('app-match-live-player > div > div:nth-child
 
 const BLimgJ = await page.$eval('app-match-live-player > div > div:nth-child(4)  div.playerProfileDefault > div:nth-child(2) > img', (img) => img.src);
 
+
+
+
+
+
+
+
+
+
+
+updatedValues.B1imageName = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(1)  a', (a) => a.href.substring(a.href.lastIndexOf('/') + 1));
+
+
+
+updatedValues.B2imageName = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(3)  a', (a) => a.href.substring(a.href.lastIndexOf('/') + 1));
+
+
+updatedValues.BLimageName = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(4)  a', (a) => a.href.substring(a.href.lastIndexOf('/') + 1));
+
+
+console.log(updatedValues.B1imageName,updatedValues.B2imageName,updatedValues.BLimageName);
+
+
+
+
+
+
     // Output the image source URL
    // console.log('Image source:', B1imageSrc,B2imageSrc,BimgJ,BLimageSrc,BLimgJ);
 
@@ -330,6 +441,13 @@ updatedValues.BJ = BimgJ;
 
 updatedValues.BLimg = BLimageSrc;
 updatedValues.BLJ = BLimgJ;
+
+
+if(updatedValues.B1PNG){
+	updatedValues.B1img = B1PNG;
+}
+
+
 
 
       let result = await page.evaluate(() => {                                                                                                       let topDiv = document.querySelector('app-match-commentary div#topDiv');
@@ -404,16 +522,55 @@ updatedValues.pship = pshipVal;
     }, 1000);
 
 
+	 
+
+
+async function png(){
+console.log('png');
+updatedValues.B1PNG = await searchGoogle(updatedValues.B1imageName,browser);
+
+}
+
+
+
+
+setTimeout(png(),2000);
+
+
+//searchGoogle(updatedValues.B1name,browser);
 
 
 
 
 
-  //  await browser.close();
+
+  // await browser.close();
+
+
+
+
+
+let i = 1;                                                                                                                      setInterval(async () => {                                               if (close){                                                      await browser.close();
+	console.log('Closed');                                                  }                                                               console.log('Not Closed:',i); 
+	i=i+1;        
+	console.log(updatedValues);
+
+i},5000);
+
+
+
+
+
+
+
   } catch (err) {
     console.log(err);
   }
 }
+
+
+//mainInstances.set(instanceId, { main, updatedValues });
+
 
 return { main, updatedValues };
 }
@@ -424,6 +581,22 @@ return { main, updatedValues };
 const mainInstances = new Map();
 const urlUsersMap = new Map();
 
+
+
+
+
+
+function cleanup(url, mainInstances) {
+  if (urlUsersMap.has(url) && urlUsersMap.get(url).size === 0) {
+    urlUsersMap.delete(url);
+    mainInstances.forEach((instance, instanceId) => {
+      if (instance.updatedValues[url]) {
+        delete instance.updatedValues[url];
+      }
+    });
+    console.log(`Closed browser for URL: ${url}`);
+  }
+}
 
           
 //main("https://crex.live/scoreboard/KJ0/1FV/2nd-ODI/O/V/ind-vs-wi-2nd-odi-india-tour-of-west-indies-2023/live");
@@ -460,15 +633,26 @@ setInterval(()=>socket.emit('updatedValues', updatedValues),1000);
     }
     urlUsersMap.get(url).add(socket.id);
 
-    // Handle user disconnection
-    socket.on('disconnect', () => {
+
+
+
+socket.on('disconnect', () => {
+console.log('dis');
+cleanup(url, mainInstances);
+ 
       urlUsersMap.get(url).delete(socket.id);
       if (urlUsersMap.get(url).size === 0) {
         // If there are no users left for this URL, close the main instance and remove it
         mainInstances.delete(instanceId);
         console.log(`Closed main instance with instanceId: ${instanceId}`);
+	      close = true;
       }
     });
+
+
+
+
+
   });
 });
 

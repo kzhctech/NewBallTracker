@@ -395,7 +395,7 @@ updatedValues.LBs = result.LBs;                            updatedValues.RR = re
   }
 };
           
-main("https://crex.live/scoreboard/LKY/1D9/8th-Match/G2/G3/cs-vs-da-8th-match-lanka-premier-league-2023/live");
+main("https://crex.live/scoreboard/LKZ/1D9/9th-Match/G5/G6/jk-vs-kf-9th-match-lanka-premier-league-2023/live");
 
 io.on('connection', (socket) => {
   setInterval(()=>socket.emit('updatedValues', updatedValues),1000);
