@@ -4,11 +4,34 @@ const path = require('path');
 var puppeteer = require('puppeteer-core');
 const http = require('http').createServer(app);
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 
 if (process.env.PORT){
 	puppeteer = require('puppeteer');
 }
+
+
+
+
+mongoose.connect('mongodb+srv://kzhccric:2FQHi2IPGWdllW21@cluster0.v6byg.mongodb.net/kzhcCric?retryWrites=true&w=majority');
+ 
+// get reference to database
+var db = mongoose.connection;
+ 
+db.on('error', console.error.bind(console, 'connection error:'));
+
+var matchLink = mongoose.Schema({
+      link:String,
+      ad:String
+    });
+ 
+    // compile schema to model
+    var Link = mongoose.model('Link', matchLink, 'linkstore');
+
+
+
+
 
 
 const io = require('socket.io')(http, {
@@ -30,17 +53,251 @@ const bodyParser = require('body-parser');
 
 
 
+
+
 app.use('/static', express.static('public'))
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+
+
+
+
+
+
 let updatedValues ={}
 
-app.get('/', (req, res) => {
-  res.render('index1');
+var intervalId;
+
+
+const startInterval = (page, selectors) => {
+ 
+ 
+let pinfo =true;
+let previousValue='';
+ 
+  let intervalId = setInterval(async () => {
+
+      const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
+      updatedValues.Team1Logo = imageSrc;
+
+      if (selectors.Status) {
+        if (pinfo) {
+          await page.click('.ptnr-info');
+          pinfo = false;
+        }
+
+        const partnerShipDataElement = await page.$('.partner-ship-data');
+        const pshipVal = await partnerShipDataElement.evaluate((element) => element.textContent);
+
+        const B1imageSrc = await page.$eval(
+          'app-match-live-player div.batsmen-partnership:nth-child(1) div.playerProfileDefault > div:nth-child(1) > img',
+          (img) => img.src
+        );
+
+        const BimgJ = await page.$eval(
+          'app-match-live-player div.batsmen-partnership:nth-child(1) div.playerProfileDefault > div:nth-child(2) > img',
+          (img) => img.src
+        );
+
+        const B2imageSrc = await page.$eval(
+          'app-match-live-player > div > div:nth-child(3) div.playerProfileDefault > div:nth-child(1) > img',
+          (img) => img.src
+        );
+
+        const BLimageSrc = await page.$eval(
+          'app-match-live-player > div > div:nth-child(4) div.playerProfileDefault > div:nth-child(1) > img',
+          (img) => img.src
+        );
+
+        const BLimgJ = await page.$eval(
+          'app-match-live-player > div > div:nth-child(4) div.playerProfileDefault > div:nth-child(2) > img',
+          (img) => img.src
+        );
+
+        updatedValues.B1img = B1imageSrc;
+        updatedValues.B2img = B2imageSrc;
+        updatedValues.BJ = BimgJ;
+        updatedValues.BLimg = BLimageSrc;
+        updatedValues.BLJ = BLimgJ;
+
+        let result = await page.evaluate(() => {
+          let topDiv = document.querySelector('app-match-commentary div#topDiv');
+          let childDivs = topDiv.querySelectorAll('div');
+
+          for (let i = 0; i < childDivs.length; i++) {
+            let spanComment = childDivs[i].querySelector('span.cm-b-comment-c2');
+            let spanOver = childDivs[i].querySelector('span.cm-b-over');
+            let spanEvent = childDivs[i].querySelector('span.cm-b-ballupdate');
+
+            if (spanComment && spanOver) {
+              let commentValue = spanComment.textContent.trim();
+              let overValue = spanOver.textContent.trim();
+              if (commentValue !== '' && overValue !== '') {
+                let eventValue = spanEvent ? spanEvent.textContent.trim() : '';
+                let lbElement = document.querySelector('div.live-data div.overs');
+                let rrElement = document.querySelector('div.live-score-card div.team-run-rate');
+                let lbValue = lbElement ? lbElement.textContent.trim() : '';
+                let rrValue = rrElement ? rrElement.textContent.trim() : '';
+
+                return {
+                  comment: commentValue,
+                  over: overValue,
+                  LBs: lbValue,
+                  RR: rrValue,
+                  Event: eventValue,
+                };
+              }
+            }
+          }
+
+          return null;
+        });
+
+
+        if (result !== null) {
+
+
+
+        updatedValues.LBs = result.LBs;
+        updatedValues.RR = result.RR;
+        updatedValues.pship = pshipVal;
+
+
+          if (result.comment !== previousValue) {
+            console.log('Comment:', result.comment);
+            console.log('Over:', result.over);
+            console.log('Event:', result.Event);
+            previousValue = result.comment;
+            updatedValues.Comment = result.comment;
+            updatedValues.ComOver = result.over;
+            updatedValues.ComEvent = result.Event;
+          }
+        } else {
+          console.log('No non-empty value found in child divs');
+        }
+      }
+
+  }, 1000);
+  return intervalId;
+};
+
+const stopInterval = (intervalId) => {
+  clearInterval(intervalId);
+};
+
+
+
+
+
+
+app.get('/link', async (req, res) => {
+    try {
+        const links = await Link.find({});
+        res.render('link', {
+            link: links[0]
+        });
+    } catch (err) {
+        console.error(err);
+        // Handle any errors here
+        res.status(500).send('Internal Server Error');
+    }
 });
+
+
+
+
+app.post('/live', async (req, res) => {
+  res.render("index1");     
+  const links = await Link.find({});
+  console.log('It us',req.body.url);
+//	await browser.close();
+	 stopInterval(intervalId);
+	 updatedValues ={};
+	 main(req.body.url);
+
+
+
+try {                                                               const updatedLink = await Link.findByIdAndUpdate(                   links[0]._id,                                                    {                                                                   link: req.body.url,                                            ad: links[0].ad                                           },                                                              { new: true }
+);                                                                                                                              if (updatedLink) {                                                //  res.redirect('/');       
+} else {                                                            res.status(404).send('Link not found');
+}                                                           }
+
+catch (err) {                                                     console.error(err);                                             res.status(500).send('Internal Server Error');                                                    }
+
+
+
+
+
+
+
+
+
+ });
+
+
+
+app.post('/link',(req,res) => {  
+
+  console.log(req.body.link);
+  console.log(req.body.ad);
+
+    // a document instance
+
+    var link1 = new Link({ link: req.body.link });
+ 
+    // save model to database
+
+    link1.save(function (err, book) {
+      if (err) return console.error(err);
+      console.log(req.body.link + " saved to link collection.");
+	res.redirect('/');
+    });
+
+
+
+})
+
+
+
+
+
+app.post('/linkup', async (req, res) => {
+    try {
+        const updatedLink = await Link.findByIdAndUpdate(
+            req.body.id,
+            {
+                link: req.body.link,
+                ad: req.body.ad
+            },
+            { new: true } // This option returns the updated document
+        );
+
+        if (updatedLink) {
+            res.redirect('/link');
+        } else {
+            res.status(404).send('Link not found'); // Handle the case when the link is not found
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error'); // Handle any errors here
+    }
+});
+
+
+
+
+
+
+app.get('/', async (req, res) => {
+  res.render("index1"); 
+
+})
+
+
+
 
 
 
@@ -137,6 +394,7 @@ const observeElementChanges = async (page, selectors) => {
  }
 };
 
+
 const observeElements = async (page, selectors) => {
  const initialValues = await getInitialValues(page, selectors);
  await observeElementChanges(page, selectors);
@@ -168,18 +426,38 @@ async function waitForSelectorWithRetry(page, selector, interval) {
 
 
 
-const main = async (url) => {
- try {
-  const browser = await puppeteer.launch({
-   headless: true,
-   args: ['--no-sandbox', '--disable-gpu'],
-  });
 
-  const page = await browser.newPage();
+
+
+
+
+
+let browser = null; // Declare a variable to store the browser instance
+let page = null; // Declare a variable to store the page instance
+
+const main = async (url) => {
+  try {
+    if (!browser) {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-gpu'],
+      });
+    }
+
+    if (page) {
+      await page.close();// Close the existing page
+	    page = null;
+    }
+
+
+  page = await browser.newPage();
   await page.setViewport({
    width: 420,
    height: 980,
   });
+
+
+
 
   await page.exposeFunction('observeElmData', (data) => {
    updatedValues[data.label] = data.newValue;
@@ -194,14 +472,7 @@ const main = async (url) => {
   console.log('Going');
 
 
-
-
-
-
-
-
-
-  const selectors = {
+	 const selectors = {
    Last: 'div.result-box > span',
    Name: 'div > h1.name-wrapper > span',
    Status: 'div.final-result.m-none',
@@ -225,7 +496,7 @@ const main = async (url) => {
    BLOver: 'app-match-live-player > div > div:nth-child(4) div.batsmen-score p:nth-child(2)',
    //BLEco: 'app-match-live-player > div > div:nth-child(4) div.strike-rate:nth-child(3) span:nth-child(2)'
   };
-  
+
 
 
 
@@ -245,146 +516,18 @@ const main = async (url) => {
 
 
 
-  
+
   const initialValues = await observeElements(page, selectors);
     Object.assign(updatedValues, initialValues);
 
     console.log('Initial values:', initialValues);
     console.log('Updated values:', updatedValues);
 
-    let previousValue = '';
-	 let pinfo = true;
 
 
 
 
-
-
-
-
-    setInterval(async () => {
-
-
-
-const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
-
-updatedValues.Team1Logo = imageSrc;
-
-
-if (selectors.Status){
-
-if (pinfo){                                                           await page.click('.ptnr-info');
-	pinfo = false;
-
-}
-
-const partnerShipDataElement = await page.$('.partner-ship-data');
-    const pshipVal = await partnerShipDataElement.evaluate(element => element.textContent);
-
-  //  console.log('Pship:', textInsidePartnerShipData);
-
-
-
-
-
-//const imageSrc = await page.$eval('div.team-img img', (img) => img.src);
-
-const B1imageSrc = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(1) div.playerProfileDefault > div:nth-child(1) > img', (img) => img.src);
-
-const BimgJ = await page.$eval('app-match-live-player div.batsmen-partnership:nth-child(1) div.playerProfileDefault > div:nth-child(2) > img', (img) => img.src);
-
-
-const B2imageSrc = await page.$eval('app-match-live-player > div > div:nth-child(3)  div.playerProfileDefault > div:nth-child(1) > img', (img) => img.src);
-
-const BLimageSrc = await page.$eval('app-match-live-player > div > div:nth-child(4)  div.playerProfileDefault > div:nth-child(1) > img', (img) => img.src);
-
-const BLimgJ = await page.$eval('app-match-live-player > div > div:nth-child(4)  div.playerProfileDefault > div:nth-child(2) > img', (img) => img.src);
-
-    // Output the image source URL
-   // console.log('Image source:', B1imageSrc,B2imageSrc,BimgJ,BLimageSrc,BLimgJ);
-
-
-//updatedValues.Team1Logo = imageSrc;
-
-updatedValues.B1img = B1imageSrc;
-updatedValues.B2img = B2imageSrc;
-updatedValues.BJ = BimgJ;
-
-updatedValues.BLimg = BLimageSrc;
-updatedValues.BLJ = BLimgJ;
-
-
-      let result = await page.evaluate(() => {                                                                                                       let topDiv = document.querySelector('app-match-commentary div#topDiv');
-        let childDivs = topDiv.querySelectorAll('div');
-
-        for (let i = 0; i < childDivs.length; i++) {
-          let spanComment = childDivs[i].querySelector('span.cm-b-comment-c2');
-          let spanOver = childDivs[i].querySelector('span.cm-b-over');
-
-		let spanEvent = childDivs[i].querySelector('span.cm-b-ballupdate');
-
-          if (spanComment && spanOver) {
-            let commentValue = spanComment.textContent.trim();
-	    let overValue =  spanOver.textContent.trim();
-            if (commentValue !== '' && overValue !== '') {
-              
-
-		    let eventValue = spanEvent ? spanEvent.textContent.trim() : '';
-
-let lbElement = document.querySelector('div.live-data div.overs');
-let rrElement = document.querySelector('div.live-score-card div.team-run-rate');
-
-        let lbValue = lbElement ? lbElement.textContent.trim() : '';                                                                                 let rrValue = rrElement ? rrElement.textContent.trim() : '';
-
-
-
-              return {
-                comment: commentValue,
-                over: overValue,
-                LBs: lbValue,
-                RR: rrValue,
-		Event:eventValue
-              };
-            }
-          }
-        }
-
-        return null;
-      });
-
-
-
-
-updatedValues.LBs = result.LBs;                            updatedValues.RR = result.RR;                              updatedValues.pship = pshipVal;
-
-
-      if (result !== null) {
-        if (result.comment !== previousValue) {
-          console.log('Comment:', result.comment);
-          console.log('Over:', result.over);
-	  console.log('Event:', result.Event);
-          previousValue = result.comment;
-
-
-
-
-                // Update the updatedValues variable with the new values
-        updatedValues.Comment = result.comment;
-        updatedValues.ComOver = result.over;
-        updatedValues.ComEvent = result.Event;
-        //  console.log('Updated values:', updatedValues);
-
-        }
-      } else {
-        console.log('No non-empty value found in child divs');
-      }
-
-
-}
-    }, 1000);
-
-
-
+intervalId = startInterval(page, selectors);
 
 
 
@@ -394,8 +537,21 @@ updatedValues.LBs = result.LBs;                            updatedValues.RR = re
     console.log(err);
   }
 };
-          
-main("https://crex.live/scoreboard/LKZ/1D9/9th-Match/G5/G6/jk-vs-kf-9th-match-lanka-premier-league-2023/live");
+
+async function go () {
+try {
+        const links = await Link.find({});
+        main(links[0].link);
+            console.log(links[0]);                              
+    } catch (err) {
+        console.error(err);
+        // Handle any errors here
+        res.status(500).send('Internal Server Error');              }
+}
+
+go();
+
+
 
 io.on('connection', (socket) => {
   setInterval(()=>socket.emit('updatedValues', updatedValues),1000);

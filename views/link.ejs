@@ -1,0 +1,13 @@
+Add
+<form method="post" action="/link">
+<input type="text" value="" name="link">
+<input type="text" value="<%= link.ad %>" name="ad">
+<input type="submit" value="Add">
+</form>
+Update
+<form method="post" action="/linkup">
+<input type="hidden" value="<%= link._id %>" name="id">
+<input type="text" value="<%= link.link %>" name="link">
+<input type="text" value="<%= link.ad %>" name="ad">
+<input type="submit" value="Update">
+</form>

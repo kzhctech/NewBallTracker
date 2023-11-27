@@ -253,10 +253,56 @@
 
 
 
-let url = prompt("Please enter CREX URL", "");
-  if (url != null) {
-    socket.emit('url',url);
+let link = prompt("Please enter CREX URL", "");
+  if (link != null) {
+    
+
+
+// Define the URL and request body
+const url = '/live';
+const data = {
+  url:link
+};
+
+// Create the request headers
+const headers = {
+  'Content-Type': 'application/json',
+  // You can add more headers if needed
+};
+
+// Create the POST request
+fetch(url, {
+  method: 'POST',
+  headers: headers,
+  body: JSON.stringify(data) // Convert data to JSON string
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); // Parse the response JSON
+  })
+  .then(data => {
+    console.log('Response data:', data);
+    // Do something with the response data
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle any errors that occurred during the fetch
+  });
+
+
+
+
+
   }
+
+
+
+
+
+
+
 
 
 
@@ -360,6 +406,23 @@ const ele = document.getElementById(bcid);
 
 
   });
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
 
 
 
